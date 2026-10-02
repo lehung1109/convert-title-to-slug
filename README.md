@@ -23,7 +23,7 @@ Công cụ trực tuyến giúp chuyển đổi tiêu đề và văn bản thàn
 - 🕒 **Lịch sử chuyển đổi (History):**
   - Tự động lưu 20 chuyển đổi gần nhất vào `localStorage` của trình duyệt.
   - Sao chép nhanh lại slug cũ hoặc xóa lịch sử bất cứ lúc nào.
-- 🔒 **Bảo mật & Riêng tư:** Xử lý 100% tại máy khách (Client-side), không gửi bất kỳ dữ liệu nào về máy chủ.
+- 🌐 **Hỗ trợ đa ngôn ngữ (i18n):** Giao diện mặc định Tiếng Anh (English) và hỗ trợ đầy đủ Tiếng Việt, có nút chuyển đổi ngôn ngữ nhanh trên Header (`EN | VI`), lưu lựa chọn vào `localStorage`.
 - 🌓 **Giao diện hiện đại & Responsive:** Hỗ trợ chế độ Sáng / Tối (Light / Dark Mode), thiết kế tối ưu trên cả desktop lẫn thiết bị di động.
 
 ---
@@ -56,17 +56,22 @@ convert-title-to-slug/
 │   ├── components/         # Các React UI Components
 │   │   ├── BulkConverter.tsx   # Chế độ chuyển đổi hàng loạt & xuất file .txt
 │   │   ├── HistoryList.tsx     # Danh sách lịch sử chuyển đổi gần đây
+│   │   ├── LanguageToggle.tsx  # Nút chuyển đổi ngôn ngữ EN / VI
 │   │   ├── OptionsToolbar.tsx  # Thanh điều khiển tùy chọn (dấu, kiểu chữ, ký tự)
 │   │   ├── SingleConverter.tsx # Chế độ chuyển đổi đơn (Live preview & đếm ký tự)
 │   │   ├── SlugApp.tsx         # Component tổng hợp state, tabs và toast
 │   │   ├── ThemeToggle.tsx     # Nút chuyển đổi Dark/Light mode
 │   │   └── Toast.tsx           # Thông báo Toast khi thao tác sao chép
+│   ├── context/            # React Contexts
+│   │   └── LanguageContext.tsx # Quản lý ngôn ngữ i18n & đồng bộ LocalStorage
 │   ├── hooks/              # Custom React Hooks
 │   │   ├── useClipboard.ts     # Xử lý sao chép vào bộ nhớ tạm (navigator.clipboard)
 │   │   └── useLocalStorage.ts  # Quản lý và đồng bộ LocalStorage (chống SSR hydration mismatch)
 │   └── lib/
+│       ├── i18n.ts             # Từ điển song ngữ Anh - Việt & helper dịch
 │       └── slugify.ts          # Core logic tạo slug tiếng Việt & chuyển đổi batch
 ├── tests/                  # Unit tests với Bun Test
+│   ├── i18n.test.ts        # Kiểm thử tính toàn vẹn của từ điển i18n
 │   └── slugify.test.ts     # Bộ kiểm thử cho hàm slugify & slugifyBatch
 ├── vercel.json             # Cấu hình triển khai trên Vercel với Bun
 ├── package.json            # Thông tin dự án, dependencies & scripts

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { SlugifyOptions, SlugHistoryItem } from '@/lib/slugify';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useLanguage } from '@/context/LanguageContext';
 import { OptionsToolbar } from '@/components/OptionsToolbar';
 import { SingleConverter } from '@/components/SingleConverter';
 import { BulkConverter } from '@/components/BulkConverter';
@@ -10,6 +11,7 @@ import { HistoryList } from '@/components/HistoryList';
 import { Toast } from '@/components/Toast';
 
 export function SlugApp() {
+  const { t, dict } = useLanguage();
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
   const [options, setOptions] = useState<SlugifyOptions>({
     separator: '-',
@@ -46,10 +48,10 @@ export function SlugApp() {
 
   const handleSlugGenerated = (original: string, slug: string) => {
     if (!original.trim() || !slug.trim()) return;
-    showToast('Đã sao chép slug vào bộ nhớ tạm!');
+    showToast(t('toastSlugCopied'));
 
     setHistory((prev) => {
-      // Tránh trùng lặp slug liên tiếp ở đầu
+      // Prevent consecutive duplicate slugs at the top
       const filtered = prev.filter((item) => item.slug !== slug);
       const newItem: SlugHistoryItem = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -57,12 +59,12 @@ export function SlugApp() {
         slug,
         timestamp: Date.now(),
       };
-      return [newItem, ...filtered].slice(0, 20); // Tối đa 20 mục
+      return [newItem, ...filtered].slice(0, 20); // Max 20 items
     });
   };
 
   const handleBulkProcessed = (count: number) => {
-    showToast(`Đã sao chép ${count} slug vào bộ nhớ tạm!`);
+    showToast(dict.toastBulkCopied(count));
   };
 
   const handleClearHistory = () => {
@@ -80,24 +82,24 @@ export function SlugApp() {
         <button
           type="button"
           onClick={() => setActiveTab('single')}
-          className={`py-3 px-6 font-semibold text-sm border-b-2 transition-all ${
+          className={`py-3 px-6 font-semibold text-sm border-b-2 transition-all cursor-pointer ${
             activeTab === 'single'
               ? 'border-blue-600 text-blue-600 dark:text-blue-400'
               : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
           }`}
         >
-          Chuyển đổi đơn (Single)
+          {t('tabSingle')}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('bulk')}
-          className={`py-3 px-6 font-semibold text-sm border-b-2 transition-all ${
+          className={`py-3 px-6 font-semibold text-sm border-b-2 transition-all cursor-pointer ${
             activeTab === 'bulk'
               ? 'border-blue-600 text-blue-600 dark:text-blue-400'
               : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
           }`}
         >
-          Chuyển đổi hàng loạt (Bulk)
+          {t('tabBulk')}
         </button>
       </div>
 

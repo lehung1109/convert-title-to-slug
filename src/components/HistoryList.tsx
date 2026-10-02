@@ -3,6 +3,7 @@
 import { Copy, Check, Trash2, Clock } from 'lucide-react';
 import { SlugHistoryItem } from '@/lib/slugify';
 import { useClipboard } from '@/hooks/useClipboard';
+import { useLanguage } from '@/context/LanguageContext';
 import { useState } from 'react';
 
 interface HistoryListProps {
@@ -13,6 +14,7 @@ interface HistoryListProps {
 
 export function HistoryList({ history, onClearHistory, onDeleteItem }: HistoryListProps) {
   const { copy } = useClipboard();
+  const { t } = useLanguage();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopy = async (item: SlugHistoryItem) => {
@@ -32,14 +34,16 @@ export function HistoryList({ history, onClearHistory, onDeleteItem }: HistoryLi
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-semibold text-sm">
           <Clock className="w-4 h-4 text-blue-500" />
-          <span>Lịch sử chuyển đổi gần đây ({history.length})</span>
+          <span>
+            {t('historyTitle')} ({history.length})
+          </span>
         </div>
         <button
           type="button"
           onClick={onClearHistory}
-          className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium transition-colors"
+          className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium transition-colors cursor-pointer"
         >
-          <Trash2 className="w-3.5 h-3.5" /> Xóa tất cả
+          <Trash2 className="w-3.5 h-3.5" /> {t('clearAll')}
         </button>
       </div>
 
@@ -54,8 +58,8 @@ export function HistoryList({ history, onClearHistory, onDeleteItem }: HistoryLi
               <button
                 type="button"
                 onClick={() => handleCopy(item)}
-                className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors"
-                title="Sao chép slug"
+                className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors cursor-pointer"
+                title={t('copySlug')}
               >
                 {copiedId === item.id ? (
                   <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -66,8 +70,8 @@ export function HistoryList({ history, onClearHistory, onDeleteItem }: HistoryLi
               <button
                 type="button"
                 onClick={() => onDeleteItem(item.id)}
-                className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 text-zinc-400 hover:text-red-500 transition-colors"
-                title="Xóa mục này"
+                className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 text-zinc-400 hover:text-red-500 transition-colors cursor-pointer"
+                title={t('deleteItem')}
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

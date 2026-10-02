@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Copy, Check, Download, X } from 'lucide-react';
 import { slugifyBatch, SlugifyOptions } from '@/lib/slugify';
 import { useClipboard } from '@/hooks/useClipboard';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface BulkConverterProps {
   options: SlugifyOptions;
@@ -13,6 +14,7 @@ interface BulkConverterProps {
 export function BulkConverter({ options, onBulkProcessed }: BulkConverterProps) {
   const [inputText, setInputText] = useState('');
   const { copy, copied } = useClipboard();
+  const { t } = useLanguage();
 
   const slugs = useMemo(() => {
     return slugifyBatch(inputText, options);
@@ -20,12 +22,13 @@ export function BulkConverter({ options, onBulkProcessed }: BulkConverterProps) 
 
   const outputText = useMemo(() => slugs.join('\n'), [slugs]);
   const lineCount = inputText ? inputText.split(/\r?\n/).length : 0;
+  const validSlugsCount = slugs.filter((s) => s.length > 0).length;
 
   const handleCopyAll = async () => {
     if (!outputText) return;
     const ok = await copy(outputText);
     if (ok && onBulkProcessed) {
-      onBulkProcessed(slugs.filter(s => s.length > 0).length);
+      onBulkProcessed(validSlugsCount);
     }
   };
 
@@ -51,22 +54,22 @@ export function BulkConverter({ options, onBulkProcessed }: BulkConverterProps) 
         <div className="space-y-1.5">
           <div className="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400">
             <span className="font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-              Danh sách gốc ({lineCount} dòng)
+              {t('bulkInputLabel')} ({lineCount} {t('lines')})
             </span>
             {inputText && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="inline-flex items-center gap-1 text-red-500 hover:text-red-600 transition-colors"
+                className="inline-flex items-center gap-1 text-red-500 hover:text-red-600 transition-colors cursor-pointer"
               >
-                <X className="w-3.5 h-3.5" /> Xóa
+                <X className="w-3.5 h-3.5" /> {t('clear')}
               </button>
             )}
           </div>
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder={`Nhập mỗi tiêu đề trên một dòng...\nVí dụ:\nBài viết giới thiệu Next.js\nLập trình Web với Bun 1.4\nSEO thân thiện cho website`}
+            placeholder={t('bulkInputPlaceholder')}
             rows={10}
             className="w-full p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono leading-relaxed"
           />
@@ -76,13 +79,13 @@ export function BulkConverter({ options, onBulkProcessed }: BulkConverterProps) 
         <div className="space-y-1.5">
           <div className="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400">
             <span className="font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-              Kết quả Slug ({slugs.filter(s => s.length > 0).length} slugs)
+              {t('bulkOutputLabel')} ({validSlugsCount} {t('slugsCount')})
             </span>
           </div>
           <textarea
             readOnly
             value={outputText}
-            placeholder="Kết quả các dòng slug tương ứng sẽ hiển thị tại đây..."
+            placeholder={t('bulkOutputPlaceholder')}
             rows={10}
             className="w-full p-3.5 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-950/10 text-blue-950 dark:text-blue-200 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none text-sm font-mono leading-relaxed"
           />
@@ -95,9 +98,9 @@ export function BulkConverter({ options, onBulkProcessed }: BulkConverterProps) 
           type="button"
           onClick={handleDownload}
           disabled={!outputText}
-          className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 font-medium text-sm flex items-center gap-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 font-medium text-sm flex items-center gap-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
-          <Download className="w-4 h-4" /> Tải file .txt
+          <Download className="w-4 h-4" /> {t('downloadTxt')}
         </button>
         <button
           type="button"
@@ -113,11 +116,11 @@ export function BulkConverter({ options, onBulkProcessed }: BulkConverterProps) 
         >
           {copied ? (
             <>
-              <Check className="w-4 h-4" /> Đã sao chép tất cả!
+              <Check className="w-4 h-4" /> {t('copiedAll')}
             </>
           ) : (
             <>
-              <Copy className="w-4 h-4" /> Sao chép toàn bộ
+              <Copy className="w-4 h-4" /> {t('copyAll')}
             </>
           )}
         </button>

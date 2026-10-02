@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { LanguageProvider } from '@/context/LanguageContext';
 
 export const metadata: Metadata = {
-  title: 'Convert Title to Slug - Công cụ tạo URL slug chuẩn SEO tiếng Việt',
-  description: 'Chuyển đổi tiêu đề và văn bản tiếng Việt sang slug URL chuẩn SEO siêu nhanh, bảo mật và hỗ trợ xử lý hàng loạt.',
+  title: 'Convert Title to Slug - SEO-Friendly URL Slug Generator',
+  description: 'Convert titles and text into clean, SEO-friendly URL slugs instantly. Client-side, secure, and supports batch processing with full Vietnamese & Unicode support.',
 };
 
 export default function RootLayout({
@@ -12,19 +13,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
-                  var saved = localStorage.getItem('theme');
+                  var savedTheme = localStorage.getItem('theme');
                   var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (saved === 'dark' || (!saved && prefersDark)) {
+                  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
                     document.documentElement.classList.add('dark');
                   } else {
                     document.documentElement.classList.remove('dark');
+                  }
+                  var savedLang = localStorage.getItem('app_lang');
+                  if (savedLang === 'vi' || savedLang === 'en') {
+                    document.documentElement.lang = savedLang;
                   }
                 } catch (e) {}
               })();
@@ -33,7 +38,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased selection:bg-blue-500 selection:text-white">
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

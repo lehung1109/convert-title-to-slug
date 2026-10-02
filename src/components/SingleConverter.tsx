@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Copy, Check, X } from 'lucide-react';
 import { slugify, SlugifyOptions } from '@/lib/slugify';
 import { useClipboard } from '@/hooks/useClipboard';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface SingleConverterProps {
   options: SlugifyOptions;
@@ -13,6 +14,7 @@ interface SingleConverterProps {
 export function SingleConverter({ options, onSlugGenerated }: SingleConverterProps) {
   const [input, setInput] = useState('');
   const { copy, copied } = useClipboard();
+  const { t } = useLanguage();
 
   const slug = useMemo(() => slugify(input, options), [input, options]);
 
@@ -34,17 +36,17 @@ export function SingleConverter({ options, onSlugGenerated }: SingleConverterPro
       <div className="space-y-1.5">
         <div className="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400">
           <label htmlFor="single-input" className="font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-            Nhập tiêu đề hoặc văn bản gốc
+            {t('singleInputLabel')}
           </label>
           <div className="flex items-center gap-3">
-            <span>{input.length} ký tự</span>
+            <span>{input.length} {t('chars')}</span>
             {input && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="inline-flex items-center gap-1 text-red-500 hover:text-red-600 transition-colors"
+                className="inline-flex items-center gap-1 text-red-500 hover:text-red-600 transition-colors cursor-pointer"
               >
-                <X className="w-3.5 h-3.5" /> Xóa
+                <X className="w-3.5 h-3.5" /> {t('clear')}
               </button>
             )}
           </div>
@@ -53,7 +55,7 @@ export function SingleConverter({ options, onSlugGenerated }: SingleConverterPro
           id="single-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ví dụ: Hướng dẫn lập trình Next.js với Bun cho người mới bắt đầu..."
+          placeholder={t('singleInputPlaceholder')}
           rows={3}
           className="w-full p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-base resize-y"
         />
@@ -63,13 +65,13 @@ export function SingleConverter({ options, onSlugGenerated }: SingleConverterPro
       <div className="space-y-1.5">
         <div className="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400">
           <label className="font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-            Slug kết quả (Live Preview)
+            {t('singleOutputLabel')}
           </label>
-          <span>{slug.length} ký tự</span>
+          <span>{slug.length} {t('chars')}</span>
         </div>
         <div className="relative flex items-center rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/20 p-2 pl-4 transition-all">
           <span className="flex-1 font-mono text-base break-all text-blue-950 dark:text-blue-200 select-all min-h-[1.5rem] flex items-center">
-            {slug || <span className="text-zinc-400 dark:text-zinc-600 select-none italic text-sm">Chưa có nội dung để tạo slug...</span>}
+            {slug || <span className="text-zinc-400 dark:text-zinc-600 select-none italic text-sm">{t('singleEmptyPlaceholder')}</span>}
           </span>
           <button
             type="button"
@@ -85,11 +87,11 @@ export function SingleConverter({ options, onSlugGenerated }: SingleConverterPro
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4" /> Đã sao chép!
+                <Check className="w-4 h-4" /> {t('copied')}
               </>
             ) : (
               <>
-                <Copy className="w-4 h-4" /> Sao chép
+                <Copy className="w-4 h-4" /> {t('copy')}
               </>
             )}
           </button>
