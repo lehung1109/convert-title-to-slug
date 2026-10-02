@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { SlugifyOptions, SlugHistoryItem } from '@/lib/slugify';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { OptionsToolbar } from '@/components/OptionsToolbar';
@@ -22,11 +22,26 @@ export function SlugApp() {
   const [history, setHistory, isHistoryMounted] = useLocalStorage<SlugHistoryItem[]>('slug_history', []);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
 
   const showToast = (msg: string) => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
     setToastMessage(msg);
     setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 2500);
+    toastTimerRef.current = setTimeout(() => {
+      setToastVisible(false);
+      toastTimerRef.current = null;
+    }, 2500);
   };
 
   const handleSlugGenerated = (original: string, slug: string) => {
